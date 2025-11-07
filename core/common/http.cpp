@@ -427,7 +427,9 @@ Retry:
 
     std::shared_ptr<ClientSocket> rsock;
     if (feed.scheme() == "https") {
-        rsock = std::make_shared<SslClientSocket>();
+        auto sslSock = std::make_shared<SslClientSocket>();
+        sslSock->setHostname(feed.host());
+        rsock = sslSock;
     } else {
         rsock = sys->createSocket();
     }
