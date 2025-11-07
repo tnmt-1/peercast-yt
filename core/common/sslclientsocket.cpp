@@ -12,6 +12,7 @@
 
 #include "sslclientsocket.h"
 #include <openssl/ssl.h>
+#include <openssl/err.h>
 #include <sys/types.h>
 #ifdef WIN32
 #else
@@ -44,6 +45,7 @@ SslClientSocket::SslClientSocket()
     m_socket = -1;
     m_ctx = nullptr;
     m_ssl = nullptr;
+    m_hostname = "";
 }
 
 SslClientSocket::~SslClientSocket()
@@ -144,10 +146,22 @@ void SslClientSocket::connect()
         throw SockException("SSL_set_fd failed");
     }
 
+    // SNI (Server Name Indication) を設定
+    if (!m_hostname.empty()) {
+        if (SSL_set_tlsext_host_name(m_ssl, m_hostname.c_str()) == 0) {
+            LOG_WARN("Failed to set SNI hostname: %s", m_hostname.c_str());
+        }
+    }
+
     int r;
     r = SSL_connect(m_ssl);
     if (r != 1) {
-	throw SockException("SSL handshake failed");
+        // エラー詳細を取得
+        int err = SSL_get_error(m_ssl, r);
+        unsigned long ssl_err = ERR_get_error();
+        char err_buf[256];
+        ERR_error_string_n(ssl_err, err_buf, sizeof(err_buf));
+        throw SockException( format("SSL handshake failed: error=%d, SSL_error=%lu (%s)", err, ssl_err, err_buf).c_str() );
     }
 }
 

@@ -14,6 +14,7 @@
 #define _SSLCLIENTSOCKET_H
 
 #include <utility> // std::pair
+#include <string>
 #include <openssl/ssl.h>
 
 #include "socket.h"
@@ -48,10 +49,14 @@ public:
     static void configureServer(const std::string& certificate, const std::string& privatekey);
     static std::pair<std::string,std::string> getServerConfiguration();
 
+    // SNI用のホスト名を設定する（connect()の前に呼び出す必要がある）
+    void setHostname(const std::string& hostname) { m_hostname = hostname; }
+
     struct sockaddr_in6 m_remoteAddr;
     int m_socket;
     SSL_CTX* m_ctx;
     SSL* m_ssl;
+    std::string m_hostname; // SNI用のホスト名
 };
 
 #endif
