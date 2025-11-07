@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import cgi, os, subprocess, sys
+import os, subprocess, sys
+
+try:
+    import cgi
+except ImportError:
+    import cgi_compat as cgi
 
 if __name__ == "__main__":
   form = cgi.FieldStorage()

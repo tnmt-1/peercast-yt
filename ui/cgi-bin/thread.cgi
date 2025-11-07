@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import cgi, json, sys
+import json, sys
 
 sys.path.append('cgi-bin')
+
+try:
+    import cgi
+except ImportError:
+    import cgi_compat as cgi
 
 import bbs_reader
 
