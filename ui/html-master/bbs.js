@@ -130,8 +130,8 @@ function switchChatVisibility() {
     }
 }
 
-function postMessage(message) {
-    $queue.push(['post', message])
+function sendChatMessage(message) {
+    $queue.push(['post', message]);
 }
 
 function delay(ms) {
@@ -295,7 +295,7 @@ async function tryOpenCurrentThreadAsync(url)
 
 function handleSubmit() {
     var value = $('#message-input').prop('value');
-    postMessage(value);
+    sendChatMessage(value);
 }
 
 $(function(){
